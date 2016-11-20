@@ -1,4 +1,4 @@
-package com.swinburne.timur.qup.dummy;
+package com.swinburne.timur.qup.queue;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -11,15 +11,15 @@ import java.util.Map;
  * <p>
  * TODO: Replace all uses of this class before publishing your app.
  */
-public class DummyContent {
+public class QueueContent {
 
     /**
-     * An array of sample (dummy) items.
+     * An array of sample (queue) items.
      */
     public static final List<DummyItem> ITEMS = new ArrayList<DummyItem>();
 
     /**
-     * A map of sample (dummy) items, by ID.
+     * A map of sample (queue) items, by ID.
      */
     public static final Map<String, DummyItem> ITEM_MAP = new HashMap<String, DummyItem>();
 
@@ -51,7 +51,7 @@ public class DummyContent {
     }
 
     /**
-     * A dummy item representing a piece of content.
+     * A queue item representing a piece of content.
      */
     public static class DummyItem {
         public final String id;
