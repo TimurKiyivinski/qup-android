@@ -6,5 +6,8 @@
     <string name="text_token">Token (used to protect your queue)</string>
     <string name="text_create">Create Queue</string>
     <string name="text_create_error">Please fill out all the fields</string>
+    <string name="text_remaining">Participants left:</string>
+    <string name="text_before">Participants before you:</string>
+    <string name="text_turn">It\'s your turn!</string>
     <string name="hint_token">Long click to auto-generate</string>
 </resources>

@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -27,8 +28,11 @@ import com.google.zxing.qrcode.QRCodeWriter;
 import com.swinburne.timur.qup.queue.Queue;
 import com.swinburne.timur.qup.queue.QueueContent;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.ArrayList;
 
 /**
  * A fragment representing a single Queue detail screen.
@@ -80,8 +84,9 @@ public class QueueDetailFragment extends Fragment {
 
         // Show the queue content as text in a TextView.
         if (mItem != null) {
-            TextView textView = (TextView) rootView.findViewById(R.id.queue_detail);
             final ImageView qrView = (ImageView) rootView.findViewById(R.id.queue_qr);
+            final TextView textTitle = (TextView) rootView.findViewById(R.id.queue_title);
+            final TextView textView = (TextView) rootView.findViewById(R.id.queue_detail);
 
             // Run QR generation in separate thread to avoid hogging main thread
             new Thread(new Runnable() {
@@ -124,7 +129,21 @@ public class QueueDetailFragment extends Fragment {
                             Log.i("VOLLEY", response.toString());
                             try {
                                 if (!response.getBoolean("error")) {
+                                    // Get participants
+                                    JSONArray participants = response.getJSONArray("participants");
+                                    if (mItem.getParticipantId().equals("")) {
+                                        textTitle.setText(getString(R.string.text_remaining));
+                                        textView.setText(String.valueOf(participants.length()));
+                                    } else {
+                                        int count;
+                                        for (count = 0; ! participants.getString(count).equals(mItem.getParticipantId()); count++) {
+                                            Log.i("COUNT", "Skipping " + participants.getString(count));
+                                        }
+                                        textTitle.setText(getString(R.string.text_before));
+                                        textView.setText(String.valueOf(count + 1));
+                                    }
                                 } else {
+                                    // Toast error message
                                     Toast toast = Toast.makeText(getContext(), response.getString("message"), Toast.LENGTH_LONG);
                                     toast.show();
                                 }
