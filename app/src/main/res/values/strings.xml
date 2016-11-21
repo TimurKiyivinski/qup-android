@@ -2,4 +2,9 @@
     <string name="app_name">QUP</string>
     <string name="title_queue_detail">Queue Detail</string>
     <string name="title_queue_create">Create New Queue</string>
+    <string name="text_name">Name</string>
+    <string name="text_token">Token (used to protect your queue)</string>
+    <string name="text_create">Create Queue</string>
+    <string name="text_create_error">Please fill out all the fields</string>
+    <string name="hint_token">Long click to auto-generate</string>
 </resources>
