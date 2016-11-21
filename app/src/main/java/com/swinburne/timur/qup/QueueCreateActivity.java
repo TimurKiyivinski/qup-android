@@ -45,7 +45,7 @@ public class QueueCreateActivity extends AppCompatActivity implements View.OnCli
             postData.put("token", token);
             JSONObject postJSONData = new JSONObject(postData);
 
-            RequestQueue queue = Volley.newRequestQueue(this);
+            RequestQueue requestQueue = Volley.newRequestQueue(this);
             JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, Queue.BASE_URL, postJSONData,
                     new Response.Listener<JSONObject>() {
                         @Override
@@ -71,7 +71,7 @@ public class QueueCreateActivity extends AppCompatActivity implements View.OnCli
                         }
                     }
             );
-            queue.add(jsonObjectRequest);
+            requestQueue.add(jsonObjectRequest);
         } else {
             Toast toast = Toast.makeText(this, getString(R.string.text_create_error), Toast.LENGTH_SHORT);
             toast.show();

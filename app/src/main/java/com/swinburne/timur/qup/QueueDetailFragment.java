@@ -1,16 +1,34 @@
 package com.swinburne.timur.qup;
 
 import android.app.Activity;
+import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.WriterException;
+import com.google.zxing.common.BitMatrix;
+import com.google.zxing.qrcode.QRCodeWriter;
 import com.swinburne.timur.qup.queue.Queue;
 import com.swinburne.timur.qup.queue.QueueContent;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  * A fragment representing a single Queue detail screen.
@@ -62,7 +80,67 @@ public class QueueDetailFragment extends Fragment {
 
         // Show the queue content as text in a TextView.
         if (mItem != null) {
-            ((TextView) rootView.findViewById(R.id.queue_detail)).setText(mItem.getParticipantId());
+            TextView textView = (TextView) rootView.findViewById(R.id.queue_detail);
+            final ImageView qrView = (ImageView) rootView.findViewById(R.id.queue_qr);
+
+            // Run QR generation in separate thread to avoid hogging main thread
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    // Populate QR code area
+                    QRCodeWriter writer = new QRCodeWriter();
+                    try {
+                        // Create QR bitmap
+                        BitMatrix bitMatrix = writer.encode(mItem.getQueueId(), BarcodeFormat.QR_CODE, 512, 512);
+                        int width = bitMatrix.getWidth();
+                        int height = bitMatrix.getHeight();
+                        final Bitmap qrBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.RGB_565);
+                        for (int x = 0; x < width; x++) {
+                            for (int y = 0; y < height; y++) {
+                                qrBitmap.setPixel(x, y, bitMatrix.get(x, y) ? Color.BLACK : Color.WHITE);
+                            }
+                        }
+
+                        // Update qrView back on UI thread
+                        qrView.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                qrView.setImageBitmap(qrBitmap);
+                            }
+                        });
+
+                    } catch (WriterException e) {
+                        Log.e("QR", e.toString());
+                    }
+                }
+            }).start();
+
+            // Update content
+            RequestQueue requestQueue = Volley.newRequestQueue(getContext());
+            JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, Queue.BASE_URL + mItem.getQueueId(), null,
+                    new Response.Listener<JSONObject>() {
+                        @Override
+                        public void onResponse(JSONObject response) {
+                            Log.i("VOLLEY", response.toString());
+                            try {
+                                if (!response.getBoolean("error")) {
+                                } else {
+                                    Toast toast = Toast.makeText(getContext(), response.getString("message"), Toast.LENGTH_LONG);
+                                    toast.show();
+                                }
+                            } catch (JSONException e) {
+                                Log.e("JSON", e.toString());
+                            }
+                        }
+                    },
+                    new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            Log.e("VOLLEY", error.toString());
+                        }
+                    }
+            );
+            requestQueue.add(jsonObjectRequest);
         }
 
         return rootView;
