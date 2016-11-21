@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 
+import com.swinburne.timur.qup.queue.Queue;
 import com.swinburne.timur.qup.queue.QueueContent;
 
 import java.util.List;
@@ -73,9 +74,9 @@ public class QueueListActivity extends AppCompatActivity {
     public class SimpleItemRecyclerViewAdapter
             extends RecyclerView.Adapter<SimpleItemRecyclerViewAdapter.ViewHolder> {
 
-        private final List<QueueContent.DummyItem> mValues;
+        private final List<Queue> mValues;
 
-        public SimpleItemRecyclerViewAdapter(List<QueueContent.DummyItem> items) {
+        public SimpleItemRecyclerViewAdapter(List<Queue> items) {
             mValues = items;
         }
 
@@ -89,15 +90,15 @@ public class QueueListActivity extends AppCompatActivity {
         @Override
         public void onBindViewHolder(final ViewHolder holder, int position) {
             holder.mItem = mValues.get(position);
-            holder.mIdView.setText(mValues.get(position).id);
-            holder.mContentView.setText(mValues.get(position).content);
+            holder.mIdView.setText(mValues.get(position).getId());
+            holder.mContentView.setText(mValues.get(position).getName());
 
             holder.mView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     if (mTwoPane) {
                         Bundle arguments = new Bundle();
-                        arguments.putString(QueueDetailFragment.ARG_ITEM_ID, holder.mItem.id);
+                        arguments.putString(QueueDetailFragment.ARG_ITEM_ID, holder.mItem.getId());
                         QueueDetailFragment fragment = new QueueDetailFragment();
                         fragment.setArguments(arguments);
                         getSupportFragmentManager().beginTransaction()
@@ -106,7 +107,7 @@ public class QueueListActivity extends AppCompatActivity {
                     } else {
                         Context context = v.getContext();
                         Intent intent = new Intent(context, QueueDetailActivity.class);
-                        intent.putExtra(QueueDetailFragment.ARG_ITEM_ID, holder.mItem.id);
+                        intent.putExtra(QueueDetailFragment.ARG_ITEM_ID, holder.mItem.getId());
 
                         context.startActivity(intent);
                     }
@@ -123,7 +124,7 @@ public class QueueListActivity extends AppCompatActivity {
             public final View mView;
             public final TextView mIdView;
             public final TextView mContentView;
-            public QueueContent.DummyItem mItem;
+            public Queue mItem;
 
             public ViewHolder(View view) {
                 super(view);

@@ -18,6 +18,10 @@ public class Queue implements Parcelable {
         this.token = token;
     }
 
+    Queue(String queueId, String participantId, String name, String token) {
+        this(0, queueId, participantId, name, token);
+    }
+
     protected Queue(Parcel in) {
         String[] data = new String[5];
 
@@ -29,8 +33,12 @@ public class Queue implements Parcelable {
         this.token = data[4];
     }
 
-    public Integer getId() {
-        return this.id;
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public String getId() {
+        return this.id.toString();
     }
 
     public String getQueueId() {

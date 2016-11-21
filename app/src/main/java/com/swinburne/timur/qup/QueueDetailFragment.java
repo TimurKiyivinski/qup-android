@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.swinburne.timur.qup.queue.Queue;
 import com.swinburne.timur.qup.queue.QueueContent;
 
 /**
@@ -27,7 +28,7 @@ public class QueueDetailFragment extends Fragment {
     /**
      * The queue content this fragment is presenting.
      */
-    private QueueContent.DummyItem mItem;
+    private Queue mItem;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -49,7 +50,7 @@ public class QueueDetailFragment extends Fragment {
             Activity activity = this.getActivity();
             CollapsingToolbarLayout appBarLayout = (CollapsingToolbarLayout) activity.findViewById(R.id.toolbar_layout);
             if (appBarLayout != null) {
-                appBarLayout.setTitle(mItem.content);
+                appBarLayout.setTitle(mItem.getName());
             }
         }
     }
@@ -61,7 +62,7 @@ public class QueueDetailFragment extends Fragment {
 
         // Show the queue content as text in a TextView.
         if (mItem != null) {
-            ((TextView) rootView.findViewById(R.id.queue_detail)).setText(mItem.details);
+            ((TextView) rootView.findViewById(R.id.queue_detail)).setText(mItem.getParticipantId());
         }
 
         return rootView;
