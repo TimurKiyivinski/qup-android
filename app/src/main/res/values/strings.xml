@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">QUP</string>
     <string name="title_queue_detail">Queue Detail</string>
+    <string name="title_queue_create">Create New Queue</string>
 </resources>

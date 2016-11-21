@@ -27,6 +27,15 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.swinburne.timur.qup.QueueListActivity" />
         </activity>
+        <activity
+            android:name=".QueueCreateActivity"
+            android:label="@string/title_queue_create"
+            android:parentActivityName=".QueueListActivity"
+            android:theme="@style/AppTheme">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.swinburne.timur.qup.QueueListActivity" />
+        </activity>
     </application>
 
 </manifest>
