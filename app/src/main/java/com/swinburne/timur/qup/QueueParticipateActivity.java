@@ -22,9 +22,6 @@ import com.swinburne.timur.qup.queue.QueueContent;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.HashMap;
-import java.util.UUID;
-
 public class QueueParticipateActivity extends AppCompatActivity implements View.OnClickListener {
     @Override
     protected void onCreate(Bundle savedInstanceState) {

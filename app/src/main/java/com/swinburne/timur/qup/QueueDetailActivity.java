@@ -1,5 +1,6 @@
 package com.swinburne.timur.qup;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -9,6 +10,9 @@ import android.view.View;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.ActionBar;
 import android.view.MenuItem;
+
+import com.swinburne.timur.qup.queue.Queue;
+import com.swinburne.timur.qup.queue.QueueContent;
 
 /**
  * An activity representing a single Queue detail screen. This
@@ -29,8 +33,10 @@ public class QueueDetailActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own detail action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                // Recreate intent as a refresh method
+                Intent intent = getIntent();
+                finish();
+                startActivity(intent);
             }
         });
 
