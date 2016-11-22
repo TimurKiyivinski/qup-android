@@ -10,6 +10,7 @@
     <string name="text_remaining">Participants left:</string>
     <string name="text_before">Participants before you:</string>
     <string name="text_turn">It\'s your turn!</string>
+    <string name="text_missed">You are not in queue, missed your turn?</string>
     <string name="text_queue_id">Queue</string>
     <string name="text_scan">Scan Queue QR</string>
     <string name="text_scan_error">Scanning cancelled</string>
@@ -17,4 +18,5 @@
     <string name="hint_token">Long click to auto-generate</string>
     <string name="hint_name">Name this queue</string>
     <string name="hint_id">Queue Id</string>
+    <string name="clipboard">Copied Queue Id</string>
 </resources>

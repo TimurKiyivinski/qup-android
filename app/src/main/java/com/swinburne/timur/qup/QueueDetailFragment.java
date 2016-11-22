@@ -1,6 +1,7 @@
 package com.swinburne.timur.qup;
 
 import android.app.Activity;
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.support.design.widget.CollapsingToolbarLayout;
@@ -111,6 +112,16 @@ public class QueueDetailFragment extends Fragment {
                             @Override
                             public void run() {
                                 qrView.setImageBitmap(qrBitmap);
+                                qrView.setOnLongClickListener(new View.OnLongClickListener() {
+                                    @Override
+                                    public boolean onLongClick(View v) {
+                                        android.content.ClipboardManager clipboard = (android.content.ClipboardManager) v.getContext().getSystemService(Context.CLIPBOARD_SERVICE);
+                                        android.content.ClipData clip = android.content.ClipData.newPlainText("QUEUE_ID", mItem.getQueueId());
+                                        clipboard.setPrimaryClip(clip);
+                                        Toast.makeText(getContext(), getString(R.string.clipboard), Toast.LENGTH_LONG).show();
+                                        return false;
+                                    }
+                                });
                             }
                         });
 
@@ -139,8 +150,16 @@ public class QueueDetailFragment extends Fragment {
                                         for (count = 0; ! participants.getString(count).equals(mItem.getParticipantId()); count++) {
                                             Log.i("COUNT", "Skipping " + participants.getString(count));
                                         }
-                                        textTitle.setText(getString(R.string.text_before));
-                                        textView.setText(String.valueOf(count + 1));
+                                        if (count == 0 && participants.getString(count).equals(mItem.getParticipantId())) {
+                                            textTitle.setText(getString(R.string.text_turn));
+                                            textView.setText(String.valueOf(count));
+                                        } else if (count > 0) {
+                                            textTitle.setText(getString(R.string.text_before));
+                                            textView.setText(String.valueOf(count));
+                                        } else {
+                                            textTitle.setText(getString(R.string.text_missed));
+                                            textView.setText(String.valueOf(count));
+                                        }
                                     }
                                 } else {
                                     // Toast error message
