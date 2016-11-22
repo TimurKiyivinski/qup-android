@@ -34,8 +34,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end|bottom"
-            fab:fab_addButtonColorNormal="@color/colorPrimary"
-            fab:fab_addButtonColorPressed="@color/colorPrimaryDark"
+            fab:fab_addButtonColorNormal="@color/colorAccent"
+            fab:fab_addButtonColorPressed="@color/colorAccentDark"
             fab:fab_addButtonStrokeVisible="true"
             fab:fab_addButtonSize="normal"
             fab:fab_labelsPosition="left">
@@ -46,8 +46,7 @@
                 android:layout_height="wrap_content"
                 fab:fab_colorNormal="@color/colorAccentCyan"
                 fab:fab_colorPressed="@color/colorAccentCyanDark"
-                fab:fab_icon="@android:drawable/ic_menu_add"
-                fab:fab_title="Create Queue" />
+                fab:fab_icon="@android:drawable/ic_menu_add"/>
 
             <com.getbase.floatingactionbutton.FloatingActionButton
                 android:id="@+id/fab_participate"
@@ -55,8 +54,7 @@
                 android:layout_height="wrap_content"
                 fab:fab_colorNormal="@color/colorAccentTeal"
                 fab:fab_colorPressed="@color/colorAccentTealDark"
-                fab:fab_icon="@android:drawable/ic_menu_camera"
-                fab:fab_title="Participate" />
+                fab:fab_icon="@android:drawable/ic_menu_camera"/>
 
         </com.getbase.floatingactionbutton.FloatingActionsMenu>
     </FrameLayout>

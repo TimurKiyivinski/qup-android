@@ -55,6 +55,15 @@ public class QueueListActivity extends AppCompatActivity {
             }
         });
 
+        com.getbase.floatingactionbutton.FloatingActionButton fabParticipate = (com.getbase.floatingactionbutton.FloatingActionButton) findViewById(R.id.fab_participate);
+        fabParticipate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(view.getContext(), QueueParticipateActivity.class);
+                ((Activity) view.getContext()).startActivityForResult(intent, 1);
+            }
+        });
+
         View recyclerView = findViewById(R.id.queue_list);
         assert recyclerView != null;
         setupRecyclerView((RecyclerView) recyclerView);

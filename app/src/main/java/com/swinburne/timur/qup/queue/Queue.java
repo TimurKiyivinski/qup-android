@@ -11,7 +11,7 @@ public class Queue implements Parcelable {
     private String token;
 
     public static final String BASE_URL = "https://qup-end.herokuapp.com/queue/";
-    public static final String PARTICIPATE_URL = "https://qup-end.herokuapp.com/queue/participate";
+    public static final String PARTICIPATE_URL = "https://qup-end.herokuapp.com/queue/participate/";
 
     public Queue(Integer id, String queueId, String participantId, String name, String token) {
         this.id = id;

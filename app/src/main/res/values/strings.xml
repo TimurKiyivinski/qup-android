@@ -2,6 +2,7 @@
     <string name="app_name">QUP</string>
     <string name="title_queue_detail">Queue Detail</string>
     <string name="title_queue_create">Create New Queue</string>
+    <string name="title_queue_participate">Participate in Queue</string>
     <string name="text_name">Name</string>
     <string name="text_token">Token (used to protect your queue)</string>
     <string name="text_create">Create Queue</string>
@@ -9,5 +10,11 @@
     <string name="text_remaining">Participants left:</string>
     <string name="text_before">Participants before you:</string>
     <string name="text_turn">It\'s your turn!</string>
+    <string name="text_queue_id">Queue</string>
+    <string name="text_scan">Scan Queue QR</string>
+    <string name="text_scan_error">Scanning cancelled</string>
+    <string name="text_participate">Join Queue</string>
     <string name="hint_token">Long click to auto-generate</string>
+    <string name="hint_name">Name this queue</string>
+    <string name="hint_id">Queue Id</string>
 </resources>
