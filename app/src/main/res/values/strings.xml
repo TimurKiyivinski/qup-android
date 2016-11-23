@@ -15,6 +15,7 @@
     <string name="text_scan">Scan Queue QR</string>
     <string name="text_scan_error">Scanning cancelled</string>
     <string name="text_participate">Join Queue</string>
+    <string name="text_next">Request next participant</string>
     <string name="hint_token">Long click to auto-generate</string>
     <string name="hint_name">Name this queue</string>
     <string name="hint_id">Queue Id</string>

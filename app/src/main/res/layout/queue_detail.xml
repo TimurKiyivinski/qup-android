@@ -37,5 +37,12 @@
         android:textAlignment="center"
         android:textColor="@color/colorAccent" />
 
+    <Button
+        android:text="@string/text_next"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/buttonNextParticipant"
+        android:visibility="gone" />
+
 </LinearLayout>
 

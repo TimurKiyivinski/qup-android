@@ -2,6 +2,7 @@ package com.swinburne.timur.qup;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.support.design.widget.CollapsingToolbarLayout;
@@ -34,6 +35,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * A fragment representing a single Queue detail screen.
@@ -41,7 +43,7 @@ import java.util.ArrayList;
  * in two-pane mode (on tablets) or a {@link QueueDetailActivity}
  * on handsets.
  */
-public class QueueDetailFragment extends Fragment {
+public class QueueDetailFragment extends Fragment implements View.OnClickListener {
     /**
      * The fragment argument representing the item ID that this fragment
      * represents.
@@ -88,6 +90,9 @@ public class QueueDetailFragment extends Fragment {
             final ImageView qrView = (ImageView) rootView.findViewById(R.id.queue_qr);
             final TextView textTitle = (TextView) rootView.findViewById(R.id.queue_title);
             final TextView textView = (TextView) rootView.findViewById(R.id.queue_detail);
+            final View nextButton = rootView.findViewById(R.id.buttonNextParticipant);
+
+            nextButton.setOnClickListener(this);
 
             // Run QR generation in separate thread to avoid hogging main thread
             new Thread(new Runnable() {
@@ -145,6 +150,7 @@ public class QueueDetailFragment extends Fragment {
                                     if (mItem.getParticipantId().equals("")) {
                                         textTitle.setText(getString(R.string.text_remaining));
                                         textView.setText(String.valueOf(participants.length()));
+                                        nextButton.setVisibility(View.VISIBLE);
                                     } else {
                                         int count;
                                         for (count = 0; ! participants.getString(count).equals(mItem.getParticipantId()); count++) {
@@ -182,5 +188,44 @@ public class QueueDetailFragment extends Fragment {
         }
 
         return rootView;
+    }
+
+    @Override
+    public void onClick(View v) {
+
+        final Activity activity = this.getActivity();
+
+        HashMap<String, String> postData = new HashMap();
+        postData.put("token", mItem.getToken());
+        JSONObject postJSONData = new JSONObject(postData);
+
+        RequestQueue requestQueue = Volley.newRequestQueue(activity);
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, Queue.BASE_URL + mItem.getQueueId(), postJSONData,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        Log.i("VOLLEY", response.toString());
+                        try {
+                            if (!response.getBoolean("error")) {
+                                // Recreate intent as a refresh method
+                                Intent intent = activity.getIntent();
+                                activity.finish();
+                                startActivity(intent);
+                            } else {
+                                Toast.makeText(activity, response.getString("message"), Toast.LENGTH_SHORT).show();
+                            }
+                        } catch (JSONException e) {
+                            Log.e("JSON", e.toString());
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.e("VOLLEY", error.toString());
+                    }
+                }
+        );
+        requestQueue.add(jsonObjectRequest);
     }
 }
