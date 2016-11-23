@@ -39,6 +39,7 @@ public class QueueListActivity extends AppCompatActivity {
      * device.
      */
     private boolean mTwoPane;
+    private SimpleItemRecyclerViewAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,7 +82,20 @@ public class QueueListActivity extends AppCompatActivity {
     }
 
     private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
-        recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(QueueContent.ITEMS));
+        this.adapter = new SimpleItemRecyclerViewAdapter(QueueContent.ITEMS);
+        recyclerView.setAdapter(this.adapter);
+    }
+
+    /**
+     * Update adapter whenever an intent returns
+     * @param requestCode
+     * @param resultCode
+     * @param data
+     */
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (this.adapter != null)
+            this.adapter.update();
     }
 
     public class SimpleItemRecyclerViewAdapter

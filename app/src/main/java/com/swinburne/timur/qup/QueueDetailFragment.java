@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.support.annotation.ColorInt;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -34,7 +35,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
@@ -87,9 +87,13 @@ public class QueueDetailFragment extends Fragment implements View.OnClickListene
 
         // Show the queue content as text in a TextView.
         if (mItem != null) {
+            // QR holders
             final ImageView qrView = (ImageView) rootView.findViewById(R.id.queue_qr);
+            final ImageView qrParticipantView = (ImageView) rootView.findViewById(R.id.queue_participant_qr);
+
             final TextView textTitle = (TextView) rootView.findViewById(R.id.queue_title);
             final TextView textView = (TextView) rootView.findViewById(R.id.queue_detail);
+            final TextView textCurrentHeader = (TextView) rootView.findViewById(R.id.textViewParticipantId);
             final View nextButton = rootView.findViewById(R.id.buttonNextParticipant);
 
             nextButton.setOnClickListener(this);
@@ -108,33 +112,82 @@ public class QueueDetailFragment extends Fragment implements View.OnClickListene
                         final Bitmap qrBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.RGB_565);
                         for (int x = 0; x < width; x++) {
                             for (int y = 0; y < height; y++) {
-                                qrBitmap.setPixel(x, y, bitMatrix.get(x, y) ? Color.BLACK : Color.WHITE);
+                                if (isAdded())
+                                    qrBitmap.setPixel(x, y, bitMatrix.get(x, y) ? Color.BLACK : getResources().getColor(R.color.colorMain));
                             }
                         }
 
-                        // Update qrView back on UI thread
-                        qrView.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                qrView.setImageBitmap(qrBitmap);
-                                qrView.setOnLongClickListener(new View.OnLongClickListener() {
-                                    @Override
-                                    public boolean onLongClick(View v) {
-                                        android.content.ClipboardManager clipboard = (android.content.ClipboardManager) v.getContext().getSystemService(Context.CLIPBOARD_SERVICE);
-                                        android.content.ClipData clip = android.content.ClipData.newPlainText("QUEUE_ID", mItem.getQueueId());
-                                        clipboard.setPrimaryClip(clip);
-                                        Toast.makeText(getContext(), getString(R.string.clipboard), Toast.LENGTH_LONG).show();
-                                        return false;
-                                    }
-                                });
-                            }
-                        });
+                        if (isAdded()) {
+                            // Update qrView back on UI thread
+                            qrView.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    qrView.setImageBitmap(qrBitmap);
+                                    qrView.setOnLongClickListener(new View.OnLongClickListener() {
+                                        @Override
+                                        public boolean onLongClick(View v) {
+                                            android.content.ClipboardManager clipboard = (android.content.ClipboardManager) v.getContext().getSystemService(Context.CLIPBOARD_SERVICE);
+                                            android.content.ClipData clip = android.content.ClipData.newPlainText("QUEUE_ID", mItem.getQueueId());
+                                            clipboard.setPrimaryClip(clip);
+                                            Toast.makeText(getContext(), getString(R.string.clipboard), Toast.LENGTH_LONG).show();
+                                            return false;
+                                        }
+                                    });
+                                }
+                            });
+                        }
 
                     } catch (WriterException e) {
+                        Log.e("QR", e.toString());
+                    } catch (IllegalStateException e) {
                         Log.e("QR", e.toString());
                     }
                 }
             }).start();
+
+            // If user is participant, show QR otherwise change text header
+            if (!mItem.getParticipantId().equals("")) {
+                // Run participant QR generation in separate thread to avoid hogging main thread
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        // Populate QR code area
+                        QRCodeWriter writer = new QRCodeWriter();
+                        try {
+                            // Create QR bitmap
+                            BitMatrix bitMatrix = writer.encode(mItem.getParticipantId(), BarcodeFormat.QR_CODE, 512, 512);
+                            int width = bitMatrix.getWidth();
+                            int height = bitMatrix.getHeight();
+                            final Bitmap qrBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.RGB_565);
+                            for (int x = 0; x < width; x++) {
+                                for (int y = 0; y < height; y++) {
+                                    if (isAdded())
+                                        qrBitmap.setPixel(x, y, bitMatrix.get(x, y) ? Color.BLACK : getResources().getColor(R.color.colorMain));
+                                }
+                            }
+
+                            if (isAdded()) {
+                                // Update qrView back on UI thread
+                                qrParticipantView.post(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        qrParticipantView.setImageBitmap(qrBitmap);
+                                        qrParticipantView.setVisibility(View.VISIBLE);
+                                        textCurrentHeader.setVisibility(View.VISIBLE);
+                                    }
+                                });
+                            }
+
+                        } catch (WriterException e) {
+                            Log.e("QR", e.toString());
+                        } catch (IllegalStateException e) {
+                            Log.e("QR", e.toString());
+                        }
+                    }
+                }).start();
+            } else {
+                textCurrentHeader.setText(getString(R.string.current_qr));
+            }
 
             // Update content
             RequestQueue requestQueue = Volley.newRequestQueue(getContext());
@@ -150,20 +203,67 @@ public class QueueDetailFragment extends Fragment implements View.OnClickListene
                                     if (mItem.getParticipantId().equals("")) {
                                         textTitle.setText(getString(R.string.text_remaining));
                                         textView.setText(String.valueOf(participants.length()));
+                                        if (response.has("current")) {
+                                            final String currentId = response.getString("current");
+
+                                            // Run current QR generation in separate thread to avoid hogging main thread
+                                            new Thread(new Runnable() {
+                                                @Override
+                                                public void run() {
+                                                    // Populate QR code area
+                                                    QRCodeWriter writer = new QRCodeWriter();
+                                                    try {
+                                                        // Create QR bitmap
+                                                        BitMatrix bitMatrix = writer.encode(currentId, BarcodeFormat.QR_CODE, 512, 512);
+                                                        int width = bitMatrix.getWidth();
+                                                        int height = bitMatrix.getHeight();
+                                                        final Bitmap qrBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.RGB_565);
+                                                        for (int x = 0; x < width; x++) {
+                                                            for (int y = 0; y < height; y++) {
+                                                                if (isAdded())
+                                                                    qrBitmap.setPixel(x, y, bitMatrix.get(x, y) ? Color.BLACK : getResources().getColor(R.color.colorMain));
+                                                            }
+                                                        }
+
+                                                        if (isAdded()) {
+                                                            // Update qrView back on UI thread
+                                                            qrParticipantView.post(new Runnable() {
+                                                                @Override
+                                                                public void run() {
+                                                                    qrParticipantView.setImageBitmap(qrBitmap);
+                                                                    qrParticipantView.setVisibility(View.VISIBLE);
+                                                                    textCurrentHeader.setVisibility(View.VISIBLE);
+                                                                }
+                                                            });
+                                                        }
+
+                                                    } catch (WriterException e) {
+                                                        Log.e("QR", e.toString());
+                                                    } catch (IllegalStateException e) {
+                                                        Log.e("QR", e.toString());
+                                                    }
+                                                }
+                                            }).start();
+                                        } else {
+                                            Toast.makeText(getContext(), getString(R.string.no_current), Toast.LENGTH_LONG).show();
+                                        }
                                         nextButton.setVisibility(View.VISIBLE);
                                     } else {
                                         int count;
-                                        for (count = 0; ! participants.getString(count).equals(mItem.getParticipantId()); count++) {
+                                        for (count = 0; count < participants.length() && ! participants.getString(count).equals(mItem.getParticipantId()); count++) {
                                             Log.i("COUNT", "Skipping " + participants.getString(count));
                                         }
+                                        Log.i("COUNT", String.valueOf(count));
                                         if (count == 0 && participants.getString(count).equals(mItem.getParticipantId())) {
+                                            Log.i("COUNT", "User turn");
                                             textTitle.setText(getString(R.string.text_turn));
                                             textView.setText(String.valueOf(count));
-                                        } else if (count > 0) {
-                                            textTitle.setText(getString(R.string.text_before));
-                                            textView.setText(String.valueOf(count));
-                                        } else {
+                                        } else if (count == participants.length()){
+                                            Log.i("COUNT", "User missed");
                                             textTitle.setText(getString(R.string.text_missed));
+                                        } else if (count > 0) {
+                                            Log.i("COUNT", "User wait");
+                                            textTitle.setText(getString(R.string.text_before));
                                             textView.setText(String.valueOf(count));
                                         }
                                     }

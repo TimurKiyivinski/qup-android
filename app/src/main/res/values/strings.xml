@@ -22,6 +22,10 @@
     <string name="clipboard">Copied Queue Id</string>
     <string name="confirm_deletion_title">Confirm Deletion</string>
     <string name="confirm_deletion_text">Are you sure you want to delete this contact?</string>
+    <string name="queue_qr">Queue QR</string>
+    <string name="current_qr">Current Id</string>
+    <string name="participant_qr">Your Id</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
+    <string name="no_current">No current participant</string>
 </resources>
