@@ -45,5 +45,6 @@
         android:text="@string/text_create"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/buttonCreate" />
+        android:id="@+id/buttonCreate"
+        android:textColor="@android:color/white" />
 </LinearLayout>
