@@ -37,12 +37,14 @@ public class QueueCreateActivity extends AppCompatActivity implements View.OnCli
     public void onClick(View v) {
         final String name = ((EditText) findViewById(R.id.editTextName)).getText().toString();
         final String token = ((EditText) findViewById(R.id.editTextToken)).getText().toString();
+        final String limit = ((EditText) findViewById(R.id.editTextLimit)).getText().toString();
 
         if (name.length() > 0 && token.length() > 0) {
             // Package data
-            HashMap<String, String> postData = new HashMap();
+            HashMap<String, Object> postData = new HashMap();
             postData.put("name", name);
             postData.put("token", token);
+            postData.put("limit", String.valueOf(limit));
             JSONObject postJSONData = new JSONObject(postData);
 
             RequestQueue requestQueue = Volley.newRequestQueue(this);
