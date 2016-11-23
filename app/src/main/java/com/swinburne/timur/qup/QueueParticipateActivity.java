@@ -51,7 +51,7 @@ public class QueueParticipateActivity extends AppCompatActivity implements View.
                                 Log.i("VOLLEY", response.toString());
                                 try {
                                     if (!response.getBoolean("error")) {
-                                        Queue queue = new Queue(response.getString("queueId"), response.getString("_id"), name, "");
+                                        Queue queue = new Queue(response.getString("queueId"), response.getString("_id"), name, response.getString("token"));
                                         QueueContent.addItem(queue);
                                         finish();
                                     } else {

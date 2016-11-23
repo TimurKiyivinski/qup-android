@@ -13,15 +13,27 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
 import com.swinburne.timur.qup.queue.Queue;
 import com.swinburne.timur.qup.queue.QueueContent;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -161,13 +173,51 @@ public class QueueListActivity extends AppCompatActivity {
                     builder.setTitle(R.string.confirm_deletion_title);
                     builder.setMessage(R.string.confirm_deletion_text);
 
+                    final Context context = v.getContext();
+
                     // Dialog action handlers
                     builder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            // Remove Address based on ID
-                            QueueContent.removeItem(holder.mItem.getId());
-                            update();
+                            if (! holder.mItem.getParticipantId().equals("")) {
+                                // Package data
+                                HashMap<String, String> postData = new HashMap();
+                                postData.put("token", holder.mItem.getToken());
+                                JSONObject postJSONData = new JSONObject(postData);
+
+                                RequestQueue requestQueue = Volley.newRequestQueue(context);
+                                Log.i("VOLLEY", Queue.UNPARTICIPATE_URL + holder.mItem.getParticipantId());
+                                JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, Queue.UNPARTICIPATE_URL + holder.mItem.getParticipantId(), postJSONData,
+                                        new Response.Listener<JSONObject>() {
+                                            @Override
+                                            public void onResponse(JSONObject response) {
+                                                Log.i("VOLLEY", response.toString());
+                                                try {
+                                                    if (!response.getBoolean("error")) {
+                                                        // Remove Address based on ID
+                                                        QueueContent.removeItem(holder.mItem.getId());
+                                                        update();
+                                                    }
+                                                    Toast toast = Toast.makeText(getApplicationContext(), response.getString("message"), Toast.LENGTH_SHORT);
+                                                    toast.show();
+                                                } catch (JSONException e) {
+                                                    Log.e("JSON", e.toString());
+                                                }
+                                            }
+                                        },
+                                        new Response.ErrorListener() {
+                                            @Override
+                                            public void onErrorResponse(VolleyError error) {
+                                                Log.e("VOLLEY", error.toString());
+                                            }
+                                        }
+                                );
+                                requestQueue.add(jsonObjectRequest);
+                            } else {
+                                // Remove Address based on ID
+                                QueueContent.removeItem(holder.mItem.getId());
+                                update();
+                            }
                         }
                     });
                     builder.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
