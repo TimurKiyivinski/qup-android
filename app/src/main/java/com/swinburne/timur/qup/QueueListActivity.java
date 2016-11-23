@@ -2,10 +2,13 @@ package com.swinburne.timur.qup;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.support.design.widget.FloatingActionButton;
@@ -84,10 +87,18 @@ public class QueueListActivity extends AppCompatActivity {
     public class SimpleItemRecyclerViewAdapter
             extends RecyclerView.Adapter<SimpleItemRecyclerViewAdapter.ViewHolder> {
 
-        private final List<Queue> mValues;
+        private List<Queue> mValues;
 
         public SimpleItemRecyclerViewAdapter(List<Queue> items) {
             mValues = items;
+        }
+
+        /**
+         * Update list contents
+         */
+        public void update() {
+            mValues = QueueContent.ITEMS;
+            notifyDataSetChanged();
         }
 
         @Override
@@ -100,8 +111,13 @@ public class QueueListActivity extends AppCompatActivity {
         @Override
         public void onBindViewHolder(final ViewHolder holder, int position) {
             holder.mItem = mValues.get(position);
-            holder.mIdView.setText(mValues.get(position).getId());
             holder.mContentView.setText(mValues.get(position).getName());
+
+            if (holder.mItem.getParticipantId().equals("")) {
+                holder.mCard.setCardBackgroundColor(getColor(R.color.colorAccentCyan));
+            } else {
+                holder.mCard.setCardBackgroundColor(getColor(R.color.colorAccentTeal));
+            }
 
             holder.mView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -123,6 +139,36 @@ public class QueueListActivity extends AppCompatActivity {
                     }
                 }
             });
+
+            holder.mView.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
+                    builder.setTitle(R.string.confirm_deletion_title);
+                    builder.setMessage(R.string.confirm_deletion_text);
+
+                    // Dialog action handlers
+                    builder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            // Remove Address based on ID
+                            QueueContent.removeItem(holder.mItem.getId());
+                            update();
+                        }
+                    });
+                    builder.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            return;
+                        }
+                    });
+
+                    // Create dialog
+                    AlertDialog deleteDialog = builder.create();
+                    deleteDialog.show();
+                    return false;
+                }
+            });
         }
 
         @Override
@@ -132,15 +178,15 @@ public class QueueListActivity extends AppCompatActivity {
 
         public class ViewHolder extends RecyclerView.ViewHolder {
             public final View mView;
-            public final TextView mIdView;
             public final TextView mContentView;
+            public final CardView mCard;
             public Queue mItem;
 
             public ViewHolder(View view) {
                 super(view);
                 mView = view;
-                mIdView = (TextView) view.findViewById(R.id.id);
                 mContentView = (TextView) view.findViewById(R.id.content);
+                mCard = (CardView) view.findViewById(R.id.cardItem);
             }
 
             @Override

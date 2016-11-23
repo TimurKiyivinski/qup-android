@@ -20,4 +20,8 @@
     <string name="hint_name">Name this queue</string>
     <string name="hint_id">Queue Id</string>
     <string name="clipboard">Copied Queue Id</string>
+    <string name="confirm_deletion_title">Confirm Deletion</string>
+    <string name="confirm_deletion_text">Are you sure you want to delete this contact?</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
 </resources>
