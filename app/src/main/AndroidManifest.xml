@@ -54,6 +54,7 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.swinburne.timur.qup.QueueListActivity" />
         </activity>
+        <receiver  android:process=":remote" android:name=".QueueReceiver"></receiver>
     </application>
 
 </manifest>
